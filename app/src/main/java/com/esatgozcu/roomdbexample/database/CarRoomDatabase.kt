@@ -25,7 +25,7 @@ abstract class CarRoomDatabase : RoomDatabase() {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
                         CarRoomDatabase::class.java,
-                        "CarDB"
+                        "AppDB"
                     ).fallbackToDestructiveMigration()
                         .build()
                     INSTANCE = instance

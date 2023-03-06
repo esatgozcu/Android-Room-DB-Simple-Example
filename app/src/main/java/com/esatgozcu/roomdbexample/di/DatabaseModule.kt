@@ -24,7 +24,7 @@ private object DatabaseModule {
         return Room.databaseBuilder(
             context.applicationContext,
             CarRoomDatabase::class.java,
-            "CarDB"
+            "AppDB"
         ).build()
     }
 }

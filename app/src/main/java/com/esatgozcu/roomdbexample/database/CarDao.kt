@@ -8,10 +8,10 @@ interface CarDAO {
     @Query("SELECT * FROM cars")
     fun getAllCars(): List<Car>
 
-    @Query("SELECT * FROM cars WHERE carName = :crId")
-    fun findCarById(crId: String): Car
+    @Query("SELECT * FROM cars WHERE carId = :crId")
+    fun findCarById(crId: Int): Car
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert
     suspend fun addCar(car: Car)
 
     @Update

@@ -8,11 +8,13 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.esatgozcu.roomdbexample.database.Car
 import com.esatgozcu.roomdbexample.utils.PopupResultType
 import com.esatgozcu.roomdbexample.viewModel.HomePageViewModel
 
@@ -22,11 +24,12 @@ fun HomePageView(viewModel: HomePageViewModel) {
 
     var text by remember { mutableStateOf("") }
     var popup by remember { mutableStateOf(false) }
+    val carList = viewModel.carList.observeAsState().value
+    var selectedCar by remember {mutableStateOf(Car(0,""))}
 
     Box(modifier = Modifier
         .fillMaxSize(),
         contentAlignment = Alignment.Center) {
-
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(15.dp),
@@ -44,25 +47,29 @@ fun HomePageView(viewModel: HomePageViewModel) {
                 )
                 Button(modifier = Modifier.width(100.dp),
                     onClick = {
-
+                        viewModel.addCar(Car(carName = text))
+                        text = ""
                     }) {
                     Text(text = "ADD")
                 }
             }
+            Text(text = "Database Items", fontSize = 20.sp)
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Database Items", fontSize = 20.sp)
                 LazyVerticalGrid(
                     cells = GridCells.Fixed(1),
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Top
                 ) {
-                    items(5) { item ->
+                    items(carList?.size ?: 0) { i ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 10.dp, bottom = 10.dp)
                                 .clickable {
+                                    selectedCar = carList?.get(i)!!
                                     popup = true
+                                    //CHECK LOG -- TAG: CLICKED_ITEM
+                                    viewModel.findCarById(carList[i].id)
                                 },
                             shape = RoundedCornerShape(10.dp),
                             backgroundColor = Color.White,
@@ -72,33 +79,22 @@ fun HomePageView(viewModel: HomePageViewModel) {
                                 modifier = Modifier
                                     .padding(20.dp)
                             ) {
-                                Text(text = "Name")
+                                Text(text = carList?.get(i)?.carName ?: "Null")
                             }
                         }
                     }
                 }
             }
         }
-
         if (popup){
-            PopupView(value = text, onDismiss = {
+            PopupView(car = selectedCar) {
                 popup = false
-                if (it.type == PopupResultType.DELETE){
-                    //DELETE
+                if (it.type == PopupResultType.DELETE) {
+                    viewModel.deleteCar(selectedCar)
+                } else if (it.type == PopupResultType.UPDATE) {
+                    viewModel.updateCar(it.car!!)
                 }
-                else if (it.type == PopupResultType.UPDATE){
-                    //UPDATE
-                }
-            })
+            }
         }
     }
 }
-
-/*
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    RoomDBExampleTheme {
-        HomePageView(HomePageViewModel(CarRepository()))
-    }
-}*/

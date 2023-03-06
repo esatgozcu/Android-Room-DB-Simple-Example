@@ -1,5 +1,6 @@
 package com.esatgozcu.roomdbexample.repository
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.esatgozcu.roomdbexample.database.Car
 import com.esatgozcu.roomdbexample.database.CarDAO
@@ -9,19 +10,20 @@ import kotlinx.coroutines.launch
 
 class CarRepository(private val carDao: CarDAO) {
 
-    val allCars = MutableLiveData<List<Car>>()
-    val foundCar = MutableLiveData<Car>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    val allCars = MutableLiveData<List<Car>>()
 
-    fun addCar(newCar: Car) {
+    fun addCar(newCar: Car, completion: () -> Unit) {
         coroutineScope.launch(Dispatchers.IO) {
             carDao.addCar(newCar)
+            completion()
         }
     }
 
-    fun updateCarDetails(updateCar: Car) {
+    fun updateCarDetails(updateCar: Car, completion: () -> Unit) {
         coroutineScope.launch(Dispatchers.IO) {
             carDao.updateCar(updateCar)
+            completion()
         }
     }
 
@@ -31,15 +33,17 @@ class CarRepository(private val carDao: CarDAO) {
         }
     }
 
-    fun deleteCar(car: Car) {
+    fun deleteCar(car: Car, completion: () -> Unit) {
         coroutineScope.launch(Dispatchers.IO) {
             carDao.deleteCar(car)
+            completion()
         }
     }
 
-    fun findCarById(clrID: String) {
+    fun findCarById(clrID: Int) {
         coroutineScope.launch(Dispatchers.IO) {
-            foundCar.postValue(carDao.findCarById(clrID))
+            val car = carDao.findCarById(clrID)
+            Log.d("CLICKED_ITEM",car.carName)
         }
     }
 }

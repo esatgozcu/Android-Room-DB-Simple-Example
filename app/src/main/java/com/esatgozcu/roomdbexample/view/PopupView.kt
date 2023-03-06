@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
@@ -15,18 +14,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.esatgozcu.roomdbexample.database.Car
 import com.esatgozcu.roomdbexample.ui.theme.RoomDBExampleTheme
 import com.esatgozcu.roomdbexample.utils.PopupResult
 import com.esatgozcu.roomdbexample.utils.PopupResultType
 
 @Composable
-fun PopupView(value: String, onDismiss: (PopupResult) -> Unit) {
+fun PopupView(car: Car, onDismiss: (PopupResult) -> Unit) {
 
-    var text by remember { mutableStateOf(value) }
+    var text by remember { mutableStateOf(car.carName) }
 
     Dialog(
         onDismissRequest = {
-            onDismiss(PopupResult())
+            onDismiss(PopupResult(PopupResultType.CLOSE,null))
         },properties = DialogProperties(
             dismissOnBackPress = true,
             dismissOnClickOutside = true
@@ -48,27 +48,29 @@ fun PopupView(value: String, onDismiss: (PopupResult) -> Unit) {
                 Row(horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(modifier = Modifier.width(100.dp),
                         onClick = {
-                            onDismiss(PopupResult(PopupResultType.UPDATE,text))
+                            onDismiss(
+                                PopupResult(
+                                    PopupResultType.UPDATE,
+                                    Car(car.id,text)
+                                )
+                            )
                         }) {
                         Text(text = "UPDATE")
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     Button(modifier = Modifier.width(100.dp),
                         onClick = {
-                            onDismiss(PopupResult(PopupResultType.DELETE,text))
+                            onDismiss(
+                                PopupResult(
+                                    PopupResultType.DELETE,
+                                    car
+                                )
+                            )
                         }) {
                         Text(text = "DELETE")
                     }
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PopupViewPreview() {
-    PopupView(value = "Value1") {
-
     }
 }

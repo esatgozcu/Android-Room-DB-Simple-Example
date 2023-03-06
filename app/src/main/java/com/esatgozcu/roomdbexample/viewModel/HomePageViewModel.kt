@@ -11,24 +11,29 @@ import javax.inject.Inject
 class HomePageViewModel @Inject constructor(private val carRepository: CarRepository) : ViewModel(){
 
     val carList: LiveData<List<Car>> = carRepository.allCars
-    val foundCar: LiveData<Car> = carRepository.foundCar
 
-    fun getAllCar(){
+    init {
+        getAllCar()
+    }
+    private fun getAllCar(){
         carRepository.getAllCars()
     }
     fun addCar(car: Car){
-        carRepository.addCar(car)
-        getAllCar()
+        carRepository.addCar(car, completion = {
+            getAllCar()
+        })
     }
     fun updateCar(car: Car){
-        carRepository.updateCarDetails(car)
-        getAllCar()
+        carRepository.updateCarDetails(car, completion = {
+            getAllCar()
+        })
     }
-    fun findCarById(crId: String){
+    fun findCarById(crId: Int){
         carRepository.findCarById(crId)
     }
     fun deleteCar(car: Car){
-        carRepository.deleteCar(car)
-        getAllCar()
+        carRepository.deleteCar(car, completion = {
+            getAllCar()
+        })
     }
 }
