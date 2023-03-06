@@ -8,15 +8,15 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(tableName = "colors")
-data class Color(
+@Entity(tableName = "cars")
+data class Car(
 
     @PrimaryKey(autoGenerate = false)
     @NonNull
     @ColumnInfo(name = "id")
     var id: Int,
 
-    @ColumnInfo(name = "colorName")
-    var colorName: String,
+    @ColumnInfo(name = "carName")
+    var carName: String,
 
 ) : Parcelable
